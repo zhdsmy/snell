@@ -1,5 +1,5 @@
 <p align="center">
-<a href="https://hub.docker.com/r/deercloud/snell">
+<a href="https://hub.docker.com/r/domizhang/snell">
 <img src="https://user-images.githubusercontent.com/2666735/52914184-588a8380-3300-11e9-8f29-d6d3adc9bd05.png" />
 </a>
 </p>
@@ -9,19 +9,15 @@
 <p align="center">an encrypted proxy service program.</p>
 
 <p align=center>
-<a href="https://hub.docker.com/r/deercloud/snell">Docker Hub</a> ·
+<a href="https://hub.docker.com/r/domizhang/snell">Docker Hub</a> ·
 <a href="https://github.com/surge-networks/snell">Project Source</a> ·
-<a href="https://t.me/linuxUpdate">Telegram Channel</a>
 </p>
-***
 
 ## latest version
 
 |version|
 |---|
-|deercloud/snell:latest|
-|deercloud/snell:current|
-|deercloud/snell:1.1.1|
+|domizhang/snell:latest (3.0.1)|
 
 
 ## environment variables
@@ -39,14 +35,14 @@
 ### Pull the image
 
 ```bash
-$ docker pull deercloud/snell
+$ docker pull domizhang/snell
 ```
 
 ### Start a container
 
 ```bash
 $ docker run -p 8388:8388 -p 8388:8388/udp -d \
-  --restart always --name=snell deercloud/snell
+  --restart always --name=snell domizhang/snell
 ```
 
 ### Display config
