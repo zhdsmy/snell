@@ -3,6 +3,7 @@ FROM ubuntu:focal as builder
 ENV SNELL_VERSION 3.0.1
 
 ARG TARGETARCH
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
   apt-get install -y unzip upx-ucl wget
