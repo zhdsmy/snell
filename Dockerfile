@@ -1,16 +1,23 @@
-FROM alpine:edge as builder
+FROM --platform=linux/amd64 alpine:edge as builder
 
 LABEL maintainer="metowolf <i@i-meto.com>"
 
 ENV SNELL_VERSION 3.0.1
 
+ARG TARGETARCH
+
+RUN apk update \
+  && apk add --no-cache unzip upx
+
 RUN if [ "$TARGETARCH" = "arm64" ] ; then \
     wget https://github.com/surge-networks/snell/releases/download/v${SNELL_VERSION}/snell-server-v${SNELL_VERSION}-linux-aarch64.zip && \
     unzip snell-server-v${SNELL_VERSION}-linux-aarch64.zip && \
+    upx --brute snell-server && \
     mv snell-server /usr/local/bin; \
   else \
     wget https://github.com/surge-networks/snell/releases/download/v${SNELL_VERSION}/snell-server-v${SNELL_VERSION}-linux-amd64.zip && \
     unzip snell-server-v${SNELL_VERSION}-linux-amd64.zip && \
+    upx --brute snell-server && \
     mv snell-server /usr/local/bin; \
   fi
 
