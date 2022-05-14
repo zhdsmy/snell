@@ -12,12 +12,12 @@ RUN apk update \
 RUN if [ "$TARGETARCH" = "arm64" ] ; then \
     wget https://github.com/surge-networks/snell/releases/download/v${SNELL_VERSION}/snell-server-v${SNELL_VERSION}-linux-aarch64.zip && \
     unzip snell-server-v${SNELL_VERSION}-linux-aarch64.zip && \
-    upx --brute snell-server && \
+    # upx --brute snell-server && \
     mv snell-server /usr/local/bin; \
   else \
     wget https://github.com/surge-networks/snell/releases/download/v${SNELL_VERSION}/snell-server-v${SNELL_VERSION}-linux-amd64.zip && \
     unzip snell-server-v${SNELL_VERSION}-linux-amd64.zip && \
-    upx --brute snell-server && \
+    # upx --brute snell-server && \
     mv snell-server /usr/local/bin; \
   fi
 
