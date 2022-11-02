@@ -6,17 +6,15 @@ ARG TARGETARCH
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-  apt-get install -y unzip upx-ucl wget
+  apt-get install -y unzip wget
 
 RUN if [ "$TARGETARCH" = "arm64" ] ; then \
   wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-v${SNELL_VERSION}-linux-aarch64.zip && \
   unzip snell-server.zip && \
-  upx --brute snell-server && \
   mv snell-server /usr/local/bin; \
   else \
   wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-v${SNELL_VERSION}-linux-amd64.zip && \
   unzip snell-server.zip && \
-  upx --brute snell-server && \
   mv snell-server /usr/local/bin; \
   fi
 

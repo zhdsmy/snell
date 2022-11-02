@@ -10,14 +10,14 @@
 
 <p align=center>
 <a href="https://hub.docker.com/r/domizhang/snell">Docker Hub</a> ·
-<a href="https://github.com/surge-networks/snell">Project Source</a> ·
+<a href="https://manual.nssurge.com/others/snell.html">Project Source</a> ·
 </p>
 
 ## latest version
 
 |version|
 |---|
-|domizhang/snell:latest (3.0.1)|
+|domizhang/snell:latest (4.0.0)|
 
 
 ## environment variables
@@ -25,9 +25,9 @@
 |name|value|
 |---|---|
 |SERVER_HOST|0.0.0.0|
-|SERVER_PORT|8388|
-|**PSK**|[RANDOM]|
-|**OBFS**|http|
+|SERVER_PORT|8888|
+|PSK|PSK, Leave blank to automatically generate|
+|IPV6|false / true|
 |ARGS|-|
 
 ***
@@ -35,14 +35,14 @@
 ### Pull the image
 
 ```bash
-$ docker pull domizhang/snell
+$ docker pull domizhang/snell:latest
 ```
 
 ### Start a container
 
 ```bash
-$ docker run -p 8388:8388 -p 8388:8388/udp -d \
-  --restart always --name=snell domizhang/snell
+$ docker run -p 8888:8888 -p 8888:8888/udp -d \
+  --restart always --name=snell domizhang/snell:latest
 ```
 
 ### Display config
@@ -51,15 +51,17 @@ $ docker run -p 8388:8388 -p 8388:8388/udp -d \
 $ docker logs snell
 
 [snell-server]
-listen = 0.0.0.0:8388
+listen = 0.0.0.0:8888
 psk = 05d80656cd67e1bec62d3366c13e6f11
-obfs = http
-2019-02-17 14:11:06.265334 [server_main] <NOTIFY> snell-server v1.1.1 (Mar  5 2019 13:50:05)
-2019-02-17 14:11:06.265477 [server_main] <NOTIFY> Start snell server on 0.0.0.0:8388
-2019-02-17 14:11:06.265484 [server_main] <NOTIFY> Obfs enabled (HTTP)
-2019-02-17 14:11:06.265546 [server_main] <NOTIFY> TCP Fast Open enabled
+ipv6 = false
+2022-11-02 13:48:38.889197 [server_main] <NOTIFY> snell-server v4.0.0 (Nov  1 2022 20:07:09)
+2022-11-02 13:48:38.889494 [server_main] <NOTIFY> Start snell server on 0.0.0.0:8888
+2022-11-02 13:48:38.889580 [server_main] <NOTIFY> TCP Fast Open enabled
 ```
 
 Add a proxy line in Surge
 
-`Proxy = snell, [SERVER ADDRESS], 8388, psk=05d80656cd67e1bec62d3366c13e6f11, obfs=http`
+```
+[Proxy]
+Proxy = snell, [SERVER_IP], [SERVER_PORT], psk=05d80656cd67e1bec62d3366c13e6f11, version=4
+```
