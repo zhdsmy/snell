@@ -1,6 +1,6 @@
 FROM ubuntu:focal as builder
 
-ENV SNELL_VERSION 4.0.0
+ENV SNELL_VERSION 4.0.1
 
 ARG TARGETARCH
 ARG DEBIAN_FRONTEND=noninteractive
