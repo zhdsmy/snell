@@ -1,6 +1,6 @@
 <p align="center">
 <a href="https://hub.docker.com/r/domizhang/snell">
-<img src="https://user-images.githubusercontent.com/2666735/52914184-588a8380-3300-11e9-8f29-d6d3adc9bd05.png" />
+<img src="https://theme.zdassets.com/theme_assets/2123378/a7dc51ceadb6f150167ee53d78bc00408da16d4f.png" width="200px"/>
 </a>
 </p>
 
@@ -9,15 +9,15 @@
 <p align="center">an encrypted proxy service program.</p>
 
 <p align=center>
-<a href="https://hub.docker.com/r/domizhang/snell">Docker Hub</a> ·
-<a href="https://manual.nssurge.com/others/snell.html">Project Source</a> ·
+<a href="https://hub.docker.com/r/domizhang/snell">Docker Hub</a> | 
+<a href="https://manual.nssurge.com/others/snell.html">Project Source</a>
 </p>
 
 ## latest version
 
 |version|
 |---|
-|domizhang/snell:latest (4.0.0)|
+|domizhang/snell:latest (4.0.1)|
 
 
 ## environment variables
