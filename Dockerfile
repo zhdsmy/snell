@@ -14,7 +14,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then \
   && mv snell-server /usr/local/bin; \
   else \
   wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-v${SNELL_VERSION}-linux-amd64.zip \
-  && unzip snell-server.zip && \
+  && unzip snell-server.zip \
   && upx --brute snell-server \
   && mv snell-server /usr/local/bin; \
   fi
