@@ -17,7 +17,7 @@
 
 |version|
 |---|
-|domizhang/snell:latest (4.0.1)|
+|domizhang/snell:latest (4.1.0)|
 
 
 ## environment variables
@@ -28,6 +28,7 @@
 |SERVER_PORT|6333|
 |PSK|PSK, Leave blank to automatically generate|
 |IPV6|false / true|
+|DNS|1.1.1.1, 8.8.8.8, 2001:4860:4860::8888|
 |ARGS|-|
 
 ***

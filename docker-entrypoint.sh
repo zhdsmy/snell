@@ -10,6 +10,7 @@ launch() {
 listen = ${SERVER_HOST}:${SERVER_PORT}
 psk = ${PSK}
 ipv6 = ${IPV6}
+dns = ${DNS}
 EOF
 
   cat snell.conf
