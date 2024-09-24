@@ -1,6 +1,6 @@
 FROM oowy/glibc:latest as builder
 
-ENV SNELL_VERSION 4.1.0
+ENV SNELL_VERSION 4.1.1
 
 ARG TARGETARCH
 

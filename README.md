@@ -17,7 +17,7 @@
 
 |version|
 |---|
-|domizhang/snell:latest (4.1.0)|
+|domizhang/snell:latest (4.1.1)|
 
 
 ## environment variables
