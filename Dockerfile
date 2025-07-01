@@ -4,8 +4,8 @@ ENV SNELL_VERSION v5.0.0b1
 
 ARG TARGETARCH
 
-RUN apk update \
-  && apk add --no-cache unzip wget
+RUN apt update \
+  && apt install -y unzip wget
 
 RUN if [ "$TARGETARCH" = "arm64" ] ; then \
   wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-${SNELL_VERSION}-linux-aarch64.zip \
