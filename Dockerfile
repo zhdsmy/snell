@@ -1,4 +1,4 @@
-FROM oowy/glibc:latest as builder
+FROM debian:latest as builder
 
 ENV SNELL_VERSION v5.0.0b1
 
@@ -17,7 +17,7 @@ RUN if [ "$TARGETARCH" = "arm64" ] ; then \
   && mv snell-server /usr/local/bin; \
   fi
 
-FROM oowy/glibc:latest
+FROM debian:latest
 
 ENV SERVER_HOST 0.0.0.0
 ENV SERVER_PORT 6333
@@ -32,6 +32,5 @@ EXPOSE ${SERVER_PORT}/udp
 
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY docker-entrypoint.sh /usr/local/bin/
-RUN apk add --update --no-cache libstdc++
 
 ENTRYPOINT ["docker-entrypoint.sh"]
