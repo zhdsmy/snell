@@ -3,6 +3,7 @@ FROM debian:latest as builder
 ENV SNELL_VERSION v5.0.0b1
 
 ARG TARGETARCH
+ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt update \
   && apt install -y unzip wget
