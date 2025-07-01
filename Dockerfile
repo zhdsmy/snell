@@ -1,6 +1,6 @@
 FROM oowy/glibc:latest as builder
 
-ENV SNELL_VERSION 4.1.1
+ENV SNELL_VERSION v5.0.0b1
 
 ARG TARGETARCH
 
@@ -8,11 +8,11 @@ RUN apk update \
   && apk add --no-cache unzip wget
 
 RUN if [ "$TARGETARCH" = "arm64" ] ; then \
-  wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-v${SNELL_VERSION}-linux-aarch64.zip \
+  wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-${SNELL_VERSION}-linux-aarch64.zip \
   && unzip snell-server.zip \
   && mv snell-server /usr/local/bin; \
   else \
-  wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-v${SNELL_VERSION}-linux-amd64.zip \
+  wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-${SNELL_VERSION}-linux-amd64.zip \
   && unzip snell-server.zip \
   && mv snell-server /usr/local/bin; \
   fi
