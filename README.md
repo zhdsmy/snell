@@ -17,7 +17,7 @@
 
 |version|
 |---|
-|domizhang/snell:latest (4.1.1)|
+|domizhang/snell:latest (5.0.0b2)|
 
 
 ## environment variables
@@ -64,5 +64,5 @@ Add a proxy line in Surge
 
 ```
 [Proxy]
-Proxy = snell, [SERVER_IP], [SERVER_PORT], psk=05d80656cd67e1bec62d3366c13e6f11, version=4
+Proxy = snell, [SERVER_IP], [SERVER_PORT], psk=05d80656cd67e1bec62d3366c13e6f11, version=5
 ```
