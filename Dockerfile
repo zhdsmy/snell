@@ -1,6 +1,6 @@
 FROM debian:latest as builder
 
-ENV SNELL_VERSION v5.0.0b3
+ENV SNELL_VERSION v5.0.0
 
 ARG TARGETARCH
 ARG DEBIAN_FRONTEND=noninteractive
