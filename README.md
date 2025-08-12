@@ -55,9 +55,12 @@ $ docker logs snell
 listen = 0.0.0.0:6333
 psk = 05d80656cd67e1bec62d3366c13e6f11
 ipv6 = false
-2022-11-02 13:48:38.889197 [server_main] <NOTIFY> snell-server v4.0.0 (Nov  1 2022 20:07:09)
-2022-11-02 13:48:38.889494 [server_main] <NOTIFY> Start snell server on 0.0.0.0:6333
-2022-11-02 13:48:38.889580 [server_main] <NOTIFY> TCP Fast Open enabled
+2025-08-12 20:13:13.673990 [server_main] <NOTIFY> snell-server v5.0.0 (Jul  7 2025 17:38:28)
+2025-08-12 20:13:13.674400 [server_main] <NOTIFY> Effective IPv4 DNS: 8.8.8.8
+2025-08-12 20:13:13.674413 [server_main] <NOTIFY> Effective IPv4 DNS: 8.8.4.4
+2025-08-12 20:13:13.674565 [server_main] <NOTIFY> Start snell server on 0.0.0.0:6333
+2025-08-12 20:13:13.674682 [server_main] <NOTIFY> TCP Fast Open enabled
+2025-08-12 20:13:13.674730 [server_main] <NOTIFY> Start snell quic proxy server. Please confirm that both TCP and UDP inbound to port 6333 has been enabled.
 ```
 
 Add a proxy line in Surge
