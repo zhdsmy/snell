@@ -35,6 +35,7 @@ COPY --from=builder /usr/local/bin /usr/local/bin
 COPY docker-entrypoint.sh /usr/local/bin/
 
 RUN apt update \
-  && apt install -y bsdmainutils
+  && apt install -y bsdmainutils \
+  && rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["docker-entrypoint.sh"]
