@@ -34,4 +34,7 @@ EXPOSE ${SERVER_PORT}/udp
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY docker-entrypoint.sh /usr/local/bin/
 
+RUN apt update \
+  && apt install -y bsdmainutils
+
 ENTRYPOINT ["docker-entrypoint.sh"]
