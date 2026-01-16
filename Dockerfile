@@ -3,19 +3,18 @@ FROM debian:latest as builder
 ENV SNELL_VERSION v5.0.1
 
 ARG TARGETARCH
-ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt update \
-  && apt install -y unzip wget
+RUN DEBIAN_FRONTEND=noninteractive apt update && \
+  apt install -y unzip wget
 
 RUN if [ "$TARGETARCH" = "arm64" ] ; then \
-  wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-${SNELL_VERSION}-linux-aarch64.zip \
-  && unzip snell-server.zip \
-  && mv snell-server /usr/local/bin; \
+  wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-${SNELL_VERSION}-linux-aarch64.zip && \
+  unzip snell-server.zip && \
+  mv snell-server /usr/local/bin; \
   else \
-  wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-${SNELL_VERSION}-linux-amd64.zip \
-  && unzip snell-server.zip \
-  && mv snell-server /usr/local/bin; \
+  wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-${SNELL_VERSION}-linux-amd64.zip && \
+  unzip snell-server.zip && \
+  mv snell-server /usr/local/bin; \
   fi
 
 FROM debian:latest
@@ -34,8 +33,8 @@ EXPOSE ${SERVER_PORT}/udp
 COPY --from=builder /usr/local/bin /usr/local/bin
 COPY docker-entrypoint.sh /usr/local/bin/
 
-RUN apt update \
-  && apt install -y bsdmainutils \
-  && rm -rf /var/lib/apt/lists/*
+RUN DEBIAN_FRONTEND=noninteractive apt update && \
+  apt install -y bsdmainutils && \
+  rm -rf /var/lib/apt/lists/*
 
 ENTRYPOINT ["docker-entrypoint.sh"]
