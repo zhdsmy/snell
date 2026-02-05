@@ -10,7 +10,7 @@ on:
 env:
   REGISTRY: docker.io
   IMAGE_NAME: snell
-  DEFAULT_VERSION: v5.0.1
+  DEFAULT_VERSION: 5.0.1
 
 jobs:
   build:
@@ -38,7 +38,6 @@ jobs:
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

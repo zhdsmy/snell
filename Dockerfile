@@ -1,7 +1,7 @@
 FROM alpine:latest AS builder
 
 ARG TARGETARCH
-ARG VERSION=v5.0.1
+ARG VERSION=5.0.1
 
 # 安装依赖并下载snell二进制文件
 RUN apk update \
@@ -12,7 +12,7 @@ RUN apk update \
        else \
          ARCH="amd64"; \
        fi \
-    && wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-${VERSION}-linux-${ARCH}.zip \
+    && wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-v${VERSION}-linux-${ARCH}.zip \
     && unzip -q snell-server.zip \
     && mv snell-server /usr/bin/snell-server \
     && chmod +x /usr/bin/snell-server \
@@ -20,7 +20,7 @@ RUN apk update \
 
 FROM frolvlad/alpine-glibc:latest
 
-ARG VERSION=v5.0.1
+ARG VERSION=5.0.1
 
 LABEL maintainer="domizhang" \
       description="Docker image for snell - A lean encrypted proxy protocol " \
