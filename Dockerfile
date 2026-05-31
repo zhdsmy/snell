@@ -1,32 +1,29 @@
-FROM alpine:latest AS builder
+# syntax=docker/dockerfile:1
+
+FROM alpine:3.23 AS downloader
 
 ARG TARGETARCH
 ARG VERSION=5.0.1
 
-# 安装依赖并下载snell二进制文件
-RUN apk update \
-    && apk add --no-cache unzip wget ca-certificates \
-    && rm -rf /var/cache/apk/* \
-    && if [ "$TARGETARCH" = "arm64" ] ; then \
-         ARCH="aarch64"; \
-       else \
-         ARCH="amd64"; \
-       fi \
-    && wget -O snell-server.zip https://dl.nssurge.com/snell/snell-server-v${VERSION}-linux-${ARCH}.zip \
-    && unzip -q snell-server.zip \
-    && mv snell-server /usr/bin/snell-server \
-    && chmod +x /usr/bin/snell-server \
-    && rm -rf /tmp/* snell-server.zip
+RUN apk add --no-cache ca-certificates unzip wget \
+    && case "${TARGETARCH}" in \
+         amd64) SNELL_ARCH="amd64" ;; \
+         arm64) SNELL_ARCH="aarch64" ;; \
+         *) echo "Unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
+       esac \
+    && wget -qO /tmp/snell-server.zip "https://dl.nssurge.com/snell/snell-server-v${VERSION}-linux-${SNELL_ARCH}.zip" \
+    && unzip -q /tmp/snell-server.zip -d /tmp \
+    && install -m 0755 /tmp/snell-server /usr/bin/snell-server
 
-FROM frolvlad/alpine-glibc:latest
+FROM frolvlad/alpine-glibc:alpine-3.22
 
 ARG VERSION=5.0.1
 
-LABEL maintainer="domizhang" \
-      description="Docker image for snell - A lean encrypted proxy protocol " \
-      version="${VERSION}"
+LABEL org.opencontainers.image.title="snell" \
+      org.opencontainers.image.description="Docker image for Snell, a lean encrypted proxy protocol" \
+      org.opencontainers.image.version="${VERSION}" \
+      org.opencontainers.image.source="https://github.com/zhdsmy/snell"
 
-# 设置环境变量默认值
 ENV SERVER_HOST=0.0.0.0 \
     SERVER_PORT=6333 \
     PSK="" \
@@ -35,23 +32,17 @@ ENV SERVER_HOST=0.0.0.0 \
     ARGS="" \
     TZ=Asia/Shanghai
 
-# 暴露默认端口
-EXPOSE ${SERVER_PORT}/tcp
-EXPOSE ${SERVER_PORT}/udp
+EXPOSE 6333/tcp
+EXPOSE 6333/udp
 
-# 复制二进制文件和启动脚本
-COPY --from=builder /usr/bin/snell-server /usr/bin/snell-server
+COPY --from=downloader /usr/bin/snell-server /usr/bin/snell-server
 COPY entrypoint.sh /entrypoint.sh
 
-# 安装依赖并清理缓存
-RUN apk update \
-    && apk add --no-cache hexdump tzdata libstdc++ \
-    && rm -rf /var/cache/apk/* \
+RUN apk add --no-cache libstdc++ tzdata \
     && chmod +x /entrypoint.sh
 
 WORKDIR /
 
-# 健康检查（动态检测进程是否存在）
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD pgrep -f snell-server > /dev/null || exit 1
 

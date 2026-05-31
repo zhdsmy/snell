@@ -1,112 +1,133 @@
 # Snell
 
-Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-notes/snell) - A lean encrypted proxy protocol
+Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-notes/snell), a lean encrypted proxy protocol.
 
-[![Docker Hub](https://img.shields.io/docker/pulls/domizhang/snell.svg)](https://hub.docker.com/r/domizhang/snell)
+[![Docker Pulls](https://img.shields.io/docker/pulls/domizhang/snell.svg)](https://hub.docker.com/r/domizhang/snell)
 [![Docker Image Size](https://img.shields.io/docker/image-size/domizhang/snell/latest)](https://hub.docker.com/r/domizhang/snell)
 
-## 快速开始
+## Included version
 
-### 使用 Docker 运行
+- Snell: `5.0.1`
+- Runtime base image: `frolvlad/alpine-glibc:alpine-3.22`
+
+## Supported platforms
+
+- `linux/amd64`
+- `linux/arm64`
+
+## Tags
+
+- `latest`: latest build from the default branch
+- `5.0.1`: current Snell version build
+- `5.0`: major/minor tag for versioned releases
+
+## Quick start
+
+Run with a generated password:
 
 ```bash
-# 使用随机生成的密码（密码会在启动时输出到日志）
-docker run -d -p 6333:6333 -p 6333:6333/udp --name snell domizhang/snell:latest
-
-# 查看生成的密码
-docker logs snell
-
-# 使用自定义密码
-docker run -d -p 6333:6333 -p 6333:6333/udp \
-  -e PSK="your-secure-password" \
+docker run -d \
   --name snell \
+  -p 6333:6333/tcp \
+  -p 6333:6333/udp \
   domizhang/snell:latest
+```
 
-# 自定义服务器配置
-docker run -d -p 6444:6444 -p 6444:6444/udp \
+Read the generated password from logs:
+
+```bash
+docker logs snell
+```
+
+Run with a fixed password:
+
+```bash
+docker run -d \
+  --name snell \
+  -p 6333:6333/tcp \
+  -p 6333:6333/udp \
+  -e PSK="your-secure-password" \
+  domizhang/snell:latest
+```
+
+Customize listener, IPv6, DNS, and extra Snell arguments:
+
+```bash
+docker run -d \
+  --name snell \
+  -p 6444:6444/tcp \
+  -p 6444:6444/udp \
   -e SERVER_HOST="0.0.0.0" \
   -e SERVER_PORT="6444" \
   -e PSK="your-secure-password" \
   -e IPV6="true" \
   -e DNS="1.1.1.1,8.8.8.8" \
-  --name snell \
+  -e ARGS="--reuse-port" \
   domizhang/snell:latest
 ```
 
-### 使用 Docker Compose
-
-创建 `docker-compose.yml` 文件：
+## Docker Compose
 
 ```yaml
-version: '3.8'
-
 services:
   snell:
     image: domizhang/snell:latest
     container_name: snell
+    restart: unless-stopped
     ports:
       - "6333:6333/tcp"
       - "6333:6333/udp"
     environment:
-      - SERVER_HOST=0.0.0.0
-      - SERVER_PORT=6333
-      - PSK=your-secure-password
-      - IPV6=false
-      - DNS=1.1.1.1,8.8.8.8
-    restart: unless-stopped
+      SERVER_HOST: 0.0.0.0
+      SERVER_PORT: "6333"
+      PSK: your-secure-password
+      IPV6: "false"
+      DNS: 1.1.1.1,8.8.8.8
 ```
 
-启动服务：
+## Environment variables
 
-```bash
-docker-compose up -d
-```
+| Variable | Default | Description |
+| --- | --- | --- |
+| `SERVER_HOST` | `0.0.0.0` | Server listen host |
+| `SERVER_PORT` | `6333` | Server listen port for TCP and UDP |
+| `PSK` | generated | Pre-shared key. If empty, a random key is generated and printed once at startup |
+| `IPV6` | `false` | Enable IPv6 support |
+| `DNS` | empty | DNS servers, comma-separated |
+| `ARGS` | empty | Extra arguments passed to `snell-server` |
+| `CONFIG_FILE` | `/tmp/snell.conf` | Generated config file path inside the container |
 
-## 环境变量
-
-| 变量名 | 默认值 | 说明 |
-|--------|--------|------|
-| `SERVER_HOST` | `0.0.0.0` | 服务器监听地址 |
-| `SERVER_PORT` | `6333` | 服务器监听端口（同时支持 TCP/UDP） |
-| `PSK` | 随机生成 | 连接密码，如果不设置将自动生成并输出到日志 |
-| `IPV6` | `false` | 是否启用 IPv6 支持 |
-| `DNS` | 空 | DNS 服务器地址，多个用逗号分隔 |
-| `ARGS` | 空 | 额外的命令行参数 |
-
-## 支持的架构
-
-- `linux/amd64`
-- `linux/arm64`
-
-## 镜像标签
-
-- `latest` - 最新的 master 分支构建
-- `x.y.z` - 特定版本号（如 `5.0.1`）
-- `x.y` - 主次版本号（如 `5.0`）
-
-## 使用示例
-
-### Surge 客户端配置
-
-在 Surge 配置文件中添加代理：
+## Surge client example
 
 ```ini
 [Proxy]
-Proxy = snell, [SERVER_IP], [SERVER_PORT], psk=[PSK], version=5
+Proxy = snell, SERVER_IP, 6333, psk=YOUR_PSK, version=5
 ```
 
-## 安全建议
+## Security notes
 
-1. **强烈建议**在生产环境中使用 `PSK` 环境变量设置强密码
-2. 不要在公网直接暴露服务，建议配合防火墙或反向代理使用
-3. 定期更新到最新版本以获取安全补丁
-4. 建议使用非标准端口以减少扫描风险
+- Use a strong explicit `PSK` in production.
+- The generated `PSK` is printed to container logs so the client can be configured. Treat logs as sensitive.
+- Provided `PSK` values are not printed, and the generated config path is logged with the key hidden.
+- Do not expose the service publicly without firewall rules or an explicit access policy.
 
-## 许可证
+## Build locally
 
-本项目遵循 Snell 的许可证。详见 [Snell 文档](https://kb.nssurge.com/surge-knowledge-base/release-notes/snell)。
+```bash
+docker build \
+  --build-arg VERSION=5.0.1 \
+  -t domizhang/snell:local .
+```
 
-## 相关链接
+## Update policy
 
-- [Snell 文档](https://kb.nssurge.com/surge-knowledge-base/release-notes/snell)
-- [Docker Hub](https://hub.docker.com/r/domizhang/snell)
+The Snell version is pinned in `Dockerfile` and `.github/workflows/main.yml`. To update:
+
+1. Check the upstream [Snell release notes](https://kb.nssurge.com/surge-knowledge-base/release-notes/snell).
+2. Update `VERSION` / `DEFAULT_VERSION`.
+3. Build and test the image.
+4. Tag the repository as `vX.Y.Z` to publish versioned tags.
+
+## License
+
+This repository only builds a Docker image. Snell is distributed under its upstream license.
