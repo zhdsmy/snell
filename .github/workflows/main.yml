@@ -86,12 +86,26 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: local/${{ env.IMAGE_NAME }}:ci
-          format: sarif
-          output: trivy-results.sarif
+          format: table
           severity: HIGH,CRITICAL
           ignore-unfixed: true
           vuln-type: os,library
+          scanners: vuln
           exit-code: "1"
+
+      - name: Generate Trivy SARIF
+        if: always()
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: local/${{ env.IMAGE_NAME }}:ci
+          format: sarif
+          output: trivy-results.sarif
+          severity: UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL
+          ignore-unfixed: true
+          vuln-type: os,library
+          scanners: vuln
+          exit-code: "0"
+          skip-setup-trivy: true
 
       - name: Upload Trivy SARIF
         if: always() && hashFiles('trivy-results.sarif') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
