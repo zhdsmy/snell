@@ -66,6 +66,7 @@ jobs:
             .
 
       - name: Build smoke-test image
+        id: smoke_build
         run: |
           docker buildx build \
             --load \
@@ -94,7 +95,7 @@ jobs:
           exit-code: "1"
 
       - name: Generate Trivy SARIF
-        if: always()
+        if: always() && steps.smoke_build.outcome == 'success'
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: local/${{ env.IMAGE_NAME }}:ci
@@ -105,7 +106,6 @@ jobs:
           vuln-type: os,library
           scanners: vuln
           exit-code: "0"
-          skip-setup-trivy: true
 
       - name: Upload Trivy SARIF
         if: always() && hashFiles('trivy-results.sarif') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
