@@ -41,6 +41,7 @@ echo "Configuration: ${CONFIG_FILE} (psk hidden)"
 echo "=========================================="
 
 if [ -n "${ARGS:-}" ]; then
+    # shellcheck disable=SC2086
     exec /usr/bin/snell-server -c "${CONFIG_FILE}" ${ARGS}
 fi
 

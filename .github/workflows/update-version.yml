@@ -1,0 +1,69 @@
+name: Check Upstream Version
+
+on:
+  schedule:
+    - cron: "29 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  IMAGE_NAME: snell
+  UPSTREAM_RELEASE_NOTES: https://kb.nssurge.com/surge-knowledge-base/release-notes/snell
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Check latest upstream release
+        id: upstream
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          CURRENT_VERSION="$(sed -n 's/^  DEFAULT_VERSION: //p' .github/workflows/main.yml)"
+          RELEASE_NOTES="$(mktemp)"
+          curl -fsSL "${UPSTREAM_RELEASE_NOTES}" -o "${RELEASE_NOTES}"
+          LATEST_VERSION="$(
+            perl -nE 'if (/snell-server-v([0-9][0-9A-Za-z.+-]*)-linux-amd64\.zip/) { say $1; exit }' "${RELEASE_NOTES}"
+          )"
+          LATEST_TAG="v${LATEST_VERSION}"
+
+          if [[ -z "${CURRENT_VERSION}" || -z "${LATEST_VERSION}" ]]; then
+            echo "Unable to determine current or latest version" >&2
+            exit 1
+          fi
+
+          echo "current=${CURRENT_VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "latest=${LATEST_VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "latest_tag=${LATEST_TAG}" >> "${GITHUB_OUTPUT}"
+
+          if [[ "${CURRENT_VERSION}" == "${LATEST_VERSION}" ]]; then
+            echo "Already up to date: ${CURRENT_VERSION}"
+            exit 0
+          fi
+
+          perl -0pi -e "s/\Q${CURRENT_VERSION}\E/${LATEST_VERSION}/g" \
+            Dockerfile README.md .github/workflows/main.yml
+
+      - name: Create update pull request
+        uses: peter-evans/create-pull-request@v8
+        with:
+          branch: automation/update-snell
+          delete-branch: true
+          commit-message: Update snell to ${{ steps.upstream.outputs.latest_tag }}
+          title: Update snell to ${{ steps.upstream.outputs.latest_tag }}
+          body: |
+            Automated upstream version update.
+
+            - Current: ${{ steps.upstream.outputs.current }}
+            - Latest: ${{ steps.upstream.outputs.latest_tag }}
+            - Source: https://kb.nssurge.com/surge-knowledge-base/release-notes/snell
+          labels: |
+            dependencies
+            docker
