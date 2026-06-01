@@ -4,14 +4,17 @@ FROM alpine:3.23 AS downloader
 
 ARG TARGETARCH
 ARG VERSION=5.0.1
+ARG SNELL_AMD64_SHA256=9bea1c2b9e35b73b31634856c04d18c393072b9e5dcde6a32781d8b8f908c539
+ARG SNELL_ARM64_SHA256=2f178bf5ac468ce1a130454efa40a0603fbbe4e47ecc4880a989f4abc7f824cf
 
 RUN apk add --no-cache ca-certificates unzip wget \
     && case "${TARGETARCH}" in \
-         amd64) SNELL_ARCH="amd64" ;; \
-         arm64) SNELL_ARCH="aarch64" ;; \
+         amd64) SNELL_ARCH="amd64"; SNELL_SHA256="${SNELL_AMD64_SHA256}" ;; \
+         arm64) SNELL_ARCH="aarch64"; SNELL_SHA256="${SNELL_ARM64_SHA256}" ;; \
          *) echo "Unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
        esac \
     && wget -qO /tmp/snell-server.zip "https://dl.nssurge.com/snell/snell-server-v${VERSION}-linux-${SNELL_ARCH}.zip" \
+    && echo "${SNELL_SHA256}  /tmp/snell-server.zip" | sha256sum -c - \
     && unzip -q /tmp/snell-server.zip -d /tmp \
     && install -m 0755 /tmp/snell-server /usr/bin/snell-server
 

@@ -9,6 +9,7 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 
 - Snell: `5.0.1`
 - Runtime base image: `frolvlad/alpine-glibc:alpine-3.22`
+- Release artifacts are verified with pinned SHA256 checksums during build.
 
 ## Supported platforms
 
@@ -62,8 +63,8 @@ docker run -d \
   -e PSK="your-secure-password" \
   -e IPV6="true" \
   -e DNS="1.1.1.1,8.8.8.8" \
-  -e ARGS="--reuse-port" \
-  domizhang/snell:latest
+  domizhang/snell:latest \
+  --reuse-port
 ```
 
 ## Docker Compose
@@ -94,7 +95,7 @@ services:
 | `PSK` | generated | Pre-shared key. If empty, a random key is generated and printed once at startup |
 | `IPV6` | `false` | Enable IPv6 support |
 | `DNS` | empty | DNS servers, comma-separated |
-| `ARGS` | empty | Extra arguments passed to `snell-server` |
+| `ARGS` | empty | Deprecated compatibility option. Prefer passing extra arguments after the image name |
 | `CONFIG_FILE` | `/tmp/snell.conf` | Generated config file path inside the container |
 
 ## Surge client example
@@ -124,7 +125,7 @@ docker build \
 The Snell version is pinned in `Dockerfile` and `.github/workflows/main.yml`. To update:
 
 1. Check the upstream [Snell release notes](https://kb.nssurge.com/surge-knowledge-base/release-notes/snell).
-2. Update `VERSION` / `DEFAULT_VERSION`.
+2. Update `VERSION` / `DEFAULT_VERSION` and the per-architecture SHA256 build arguments.
 3. Build and test the image.
 4. Tag the repository as `vX.Y.Z` to publish versioned tags.
 

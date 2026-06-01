@@ -41,8 +41,11 @@ echo "Configuration: ${CONFIG_FILE} (psk hidden)"
 echo "=========================================="
 
 if [ -n "${ARGS:-}" ]; then
+    echo "ARGS is deprecated. Pass extra snell-server options after the image name instead."
+    set -f
     # shellcheck disable=SC2086
-    exec /usr/bin/snell-server -c "${CONFIG_FILE}" ${ARGS}
+    set -- ${ARGS} "$@"
+    set +f
 fi
 
-exec /usr/bin/snell-server -c "${CONFIG_FILE}"
+exec /usr/bin/snell-server -c "${CONFIG_FILE}" "$@"

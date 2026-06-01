@@ -48,8 +48,21 @@ jobs:
             exit 0
           fi
 
+          AMD64_SHA256="$(
+            curl -fsSL "https://dl.nssurge.com/snell/snell-server-v${LATEST_VERSION}-linux-amd64.zip" \
+              | sha256sum \
+              | awk '{print $1}'
+          )"
+          ARM64_SHA256="$(
+            curl -fsSL "https://dl.nssurge.com/snell/snell-server-v${LATEST_VERSION}-linux-aarch64.zip" \
+              | sha256sum \
+              | awk '{print $1}'
+          )"
+
           perl -0pi -e "s/\Q${CURRENT_VERSION}\E/${LATEST_VERSION}/g" \
             Dockerfile README.md .github/workflows/main.yml
+          perl -0pi -e "s/^ARG SNELL_AMD64_SHA256=.*/ARG SNELL_AMD64_SHA256=${AMD64_SHA256}/m" Dockerfile
+          perl -0pi -e "s/^ARG SNELL_ARM64_SHA256=.*/ARG SNELL_ARM64_SHA256=${ARM64_SHA256}/m" Dockerfile
 
       - name: Create update pull request
         uses: peter-evans/create-pull-request@v8
