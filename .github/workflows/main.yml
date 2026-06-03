@@ -21,7 +21,6 @@ concurrency:
 
 env:
   IMAGE_NAME: snell
-  DEFAULT_VERSION: 5.0.1
 
 jobs:
   validate:
@@ -37,7 +36,7 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
           else
-            VERSION="${DEFAULT_VERSION}"
+            VERSION="$(tr -d '[:space:]' < VERSION)"
           fi
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "Building Snell ${VERSION}"
@@ -129,7 +128,7 @@ jobs:
           if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
           else
-            VERSION="${DEFAULT_VERSION}"
+            VERSION="$(tr -d '[:space:]' < VERSION)"
           fi
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
           echo "Building Snell ${VERSION}"

@@ -26,7 +26,7 @@ jobs:
         run: |
           set -euo pipefail
 
-          CURRENT_VERSION="$(sed -n 's/^  DEFAULT_VERSION: //p' .github/workflows/main.yml)"
+          CURRENT_VERSION="$(tr -d '[:space:]' < VERSION)"
           RELEASE_NOTES="$(mktemp)"
           curl -fsSL "${UPSTREAM_RELEASE_NOTES}" -o "${RELEASE_NOTES}"
           LATEST_VERSION="$(
@@ -60,7 +60,7 @@ jobs:
           )"
 
           perl -0pi -e "s/\Q${CURRENT_VERSION}\E/${LATEST_VERSION}/g" \
-            Dockerfile README.md .github/workflows/main.yml
+            VERSION Dockerfile README.md
           perl -0pi -e "s/^ARG SNELL_AMD64_SHA256=.*/ARG SNELL_AMD64_SHA256=${AMD64_SHA256}/m" Dockerfile
           perl -0pi -e "s/^ARG SNELL_ARM64_SHA256=.*/ARG SNELL_ARM64_SHA256=${ARM64_SHA256}/m" Dockerfile
 
