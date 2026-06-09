@@ -59,8 +59,14 @@ jobs:
               | awk '{print $1}'
           )"
 
-          perl -0pi -e "s/\Q${CURRENT_VERSION}\E/${LATEST_VERSION}/g" \
-            VERSION Dockerfile README.md
+          export OLD_VERSION="${CURRENT_VERSION}" NEW_VERSION="${LATEST_VERSION}"
+          printf '%s\n' "${LATEST_VERSION}" > VERSION
+          perl -0pi -e '
+            s/^ARG VERSION=\Q$ENV{OLD_VERSION}\E$/ARG VERSION=$ENV{NEW_VERSION}/mg;
+            s/(Snell: `)\Q$ENV{OLD_VERSION}\E(`)/$1$ENV{NEW_VERSION}$2/g;
+            s/(`)\Q$ENV{OLD_VERSION}\E(`: current Snell version build)/$1$ENV{NEW_VERSION}$2/g;
+            s/(--build-arg VERSION=)\Q$ENV{OLD_VERSION}\E/$1$ENV{NEW_VERSION}/g;
+          ' Dockerfile README.md
           perl -0pi -e "s/^ARG SNELL_AMD64_SHA256=.*/ARG SNELL_AMD64_SHA256=${AMD64_SHA256}/m" Dockerfile
           perl -0pi -e "s/^ARG SNELL_ARM64_SHA256=.*/ARG SNELL_ARM64_SHA256=${ARM64_SHA256}/m" Dockerfile
 
