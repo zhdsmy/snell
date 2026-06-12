@@ -38,7 +38,12 @@ jobs:
           else
             VERSION="$(tr -d '[:space:]' < VERSION)"
           fi
+          MAJOR="${VERSION%%.*}"
+          MINOR_PART="${VERSION#*.}"
+          MINOR="${MINOR_PART%%.*}"
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "major=${MAJOR}" >> "${GITHUB_OUTPUT}"
+          echo "minor=${MAJOR}.${MINOR}" >> "${GITHUB_OUTPUT}"
           echo "Building Snell ${VERSION}"
 
       - name: Lint Dockerfile
@@ -143,7 +148,12 @@ jobs:
           else
             VERSION="$(tr -d '[:space:]' < VERSION)"
           fi
+          MAJOR="${VERSION%%.*}"
+          MINOR_PART="${VERSION#*.}"
+          MINOR="${MINOR_PART%%.*}"
           echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+          echo "major=${MAJOR}" >> "${GITHUB_OUTPUT}"
+          echo "minor=${MAJOR}.${MINOR}" >> "${GITHUB_OUTPUT}"
           echo "Building Snell ${VERSION}"
 
       - name: Extract metadata
@@ -156,9 +166,9 @@ jobs:
             org.opencontainers.image.description=Docker image for Snell, a lean encrypted proxy protocol
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
-            type=raw,value=${{ steps.version.outputs.version }},enable={{is_default_branch}}
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=${{ steps.version.outputs.version }}
+            type=raw,value=${{ steps.version.outputs.major }}
+            type=raw,value=${{ steps.version.outputs.minor }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -194,3 +204,11 @@ jobs:
           repository: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}
           short-description: "Docker image for Snell - A lean encrypted proxy protocol"
           readme-filepath: ./README.md
+
+      - name: Backfill Snell v5 aliases
+        if: github.ref == 'refs/heads/master'
+        run: |
+          docker buildx imagetools create \
+            --tag "${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5" \
+            --tag "${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5.0" \
+            "${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5.0.1"

@@ -7,7 +7,7 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 
 ## Included version
 
-- Snell: `6.0.0b1`
+- Snell: `6.0.0b2`
 - Runtime base image: `debian:bullseye-slim`
 - Release artifacts are verified with pinned SHA256 checksums during build.
 
@@ -19,7 +19,9 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 ## Tags
 
 - `latest`: latest build from the default branch
-- `6.0.0b1`: current Snell version build
+- `6.0.0b2`: current Snell version build
+- `6`, `6.0`: latest Snell v6 build
+- `5`, `5.0`: latest Snell v5 build, currently `5.0.1`
 
 ## Quick start
 
@@ -121,7 +123,7 @@ Proxy = snell, SERVER_IP, 6333, psk=YOUR_PSK, version=6
 
 ```bash
 docker build \
-  --build-arg VERSION=6.0.0b1 \
+  --build-arg VERSION=6.0.0b2 \
   -t domizhang/snell:local .
 ```
 

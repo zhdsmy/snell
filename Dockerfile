@@ -3,26 +3,26 @@
 FROM alpine:3.23 AS downloader
 
 ARG TARGETARCH
-ARG VERSION=6.0.0b1
-ARG SNELL_AMD64_SHA256=3592aaa807c2dfd09e39d4574ac9ec17ed8dba57571c6dbf2c7f44bbe219e2c7
-ARG SNELL_ARM64_SHA256=f18ed9a4f9ea3af42fc616fe164402a46b2c01811affcc5382e681d217a6d938
+ARG VERSION=6.0.0b2
+ARG SNELL_AMD64_SHA256=bb918519d851b45cfd23b9bcba1f981d9efbfe0ebe2dd5f6868c6c5e9f42ba52
+ARG SNELL_ARM64_SHA256=34bbb47c908422820ebc64ede2dc321303608a856811c1d40f0521395fecbbf2
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-RUN apk add --no-cache ca-certificates unzip wget \
+RUN apk add --no-cache ca-certificates curl unzip \
     && case "${TARGETARCH}" in \
          amd64) SNELL_ARCH="amd64"; SNELL_SHA256="${SNELL_AMD64_SHA256}" ;; \
          arm64) SNELL_ARCH="aarch64"; SNELL_SHA256="${SNELL_ARM64_SHA256}" ;; \
          *) echo "Unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
        esac \
-    && wget -qO /tmp/snell-server.zip "https://dl.nssurge.com/snell/snell-server-v${VERSION}-linux-${SNELL_ARCH}.zip" \
+    && curl -fsSL -o /tmp/snell-server.zip "https://dl.nssurge.com/snell/snell-server-v${VERSION}-linux-${SNELL_ARCH}.zip" \
     && echo "${SNELL_SHA256}  /tmp/snell-server.zip" | sha256sum -c - \
     && unzip -q /tmp/snell-server.zip -d /tmp \
     && install -m 0755 /tmp/snell-server /usr/bin/snell-server
 
 FROM debian:bullseye-slim
 
-ARG VERSION=6.0.0b1
+ARG VERSION=6.0.0b2
 
 LABEL org.opencontainers.image.title="snell" \
       org.opencontainers.image.description="Docker image for Snell, a lean encrypted proxy protocol" \
