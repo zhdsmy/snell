@@ -35,6 +35,7 @@ ENV SERVER_HOST=0.0.0.0 \
     IPV6=false \
     DNS="" \
     DNS_IP_PREFERENCE="" \
+    EGRESS_INTERFACE="" \
     ARGS="" \
     TZ=Asia/Shanghai
 

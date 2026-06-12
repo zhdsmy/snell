@@ -50,7 +50,7 @@ docker run -d \
   domizhang/snell:latest
 ```
 
-Customize listener, IPv6 compatibility, DNS, DNS IP preference, and extra Snell arguments:
+Customize listener, IPv6 compatibility, DNS, DNS IP preference, egress interface, and extra Snell arguments:
 
 ```bash
 docker run -d \
@@ -63,6 +63,7 @@ docker run -d \
   -e IPV6="true" \
   -e DNS="1.1.1.1,8.8.8.8" \
   -e DNS_IP_PREFERENCE="prefer-ipv4" \
+  -e EGRESS_INTERFACE="eth0" \
   domizhang/snell:latest \
   -l verbose
 ```
@@ -85,6 +86,7 @@ services:
       IPV6: "false"
       DNS: 1.1.1.1,8.8.8.8
       DNS_IP_PREFERENCE: prefer-ipv4
+      EGRESS_INTERFACE: eth0
 ```
 
 ## Environment variables
@@ -97,6 +99,7 @@ services:
 | `IPV6` | `false` | Deprecated Snell compatibility option. `false` maps to IPv4-only behavior unless `DNS_IP_PREFERENCE` is set |
 | `DNS` | empty | DNS servers, comma-separated |
 | `DNS_IP_PREFERENCE` | empty | Optional Snell v6 `dns-ip-preference` value: `default`, `prefer-ipv4`, `prefer-ipv6`, `ipv4-only`, or `ipv6-only` |
+| `EGRESS_INTERFACE` | empty | Optional Snell v6 outbound interface binding |
 | `ARGS` | empty | Deprecated compatibility option. Prefer passing extra arguments after the image name |
 | `CONFIG_FILE` | `/tmp/snell.conf` | Generated config file path inside the container |
 
