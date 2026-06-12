@@ -4,6 +4,7 @@ set -eu
 SERVER_HOST=${SERVER_HOST:-0.0.0.0}
 SERVER_PORT=${SERVER_PORT:-6333}
 IPV6=${IPV6:-false}
+DNS_IP_PREFERENCE=${DNS_IP_PREFERENCE:-}
 CONFIG_FILE=${CONFIG_FILE:-/tmp/snell.conf}
 
 echo "=========================================="
@@ -31,11 +32,18 @@ if [ -n "${DNS:-}" ]; then
     echo "dns = ${DNS}" >> "${CONFIG_FILE}"
 fi
 
+if [ -n "${DNS_IP_PREFERENCE:-}" ]; then
+    echo "dns-ip-preference = ${DNS_IP_PREFERENCE}" >> "${CONFIG_FILE}"
+fi
+
 echo "Server Host: ${SERVER_HOST}"
 echo "Server Port: ${SERVER_PORT}"
 echo "IPv6 Support: ${IPV6}"
 if [ -n "${DNS:-}" ]; then
     echo "DNS Server: ${DNS}"
+fi
+if [ -n "${DNS_IP_PREFERENCE:-}" ]; then
+    echo "DNS IP Preference: ${DNS_IP_PREFERENCE}"
 fi
 echo "Configuration: ${CONFIG_FILE} (psk hidden)"
 echo "=========================================="

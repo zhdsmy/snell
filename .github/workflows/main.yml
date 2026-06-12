@@ -44,7 +44,7 @@ jobs:
       - name: Lint Dockerfile
         run: |
           docker run --rm -i hadolint/hadolint:v2.12.0-alpine \
-            hadolint --ignore DL3006 --ignore DL3018 - < Dockerfile
+            hadolint --ignore DL3006 --ignore DL3008 --ignore DL3018 - < Dockerfile
 
       - name: Install ShellCheck
         run: |
@@ -76,7 +76,7 @@ jobs:
 
       - name: Smoke test
         run: |
-          cid="$(docker run --platform linux/amd64 -d -e PSK=ci-smoke local/${IMAGE_NAME}:ci)"
+          cid="$(docker run --platform linux/amd64 -d -e PSK=ci-smoke-password local/${IMAGE_NAME}:ci)"
           trap 'docker rm -f "${cid}"' EXIT
           sleep 2
           docker logs "${cid}"

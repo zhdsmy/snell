@@ -7,8 +7,8 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 
 ## Included version
 
-- Snell: `5.0.1`
-- Runtime base image: `frolvlad/alpine-glibc:alpine-3.22`
+- Snell: `6.0.0b1`
+- Runtime base image: `debian:bullseye-slim`
 - Release artifacts are verified with pinned SHA256 checksums during build.
 
 ## Supported platforms
@@ -19,8 +19,7 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 ## Tags
 
 - `latest`: latest build from the default branch
-- `5.0.1`: current Snell version build
-- `5.0`: major/minor tag for versioned releases
+- `6.0.0b1`: current Snell version build
 
 ## Quick start
 
@@ -51,7 +50,7 @@ docker run -d \
   domizhang/snell:latest
 ```
 
-Customize listener, IPv6, DNS, and extra Snell arguments:
+Customize listener, IPv6 compatibility, DNS, DNS IP preference, and extra Snell arguments:
 
 ```bash
 docker run -d \
@@ -63,8 +62,9 @@ docker run -d \
   -e PSK="your-secure-password" \
   -e IPV6="true" \
   -e DNS="1.1.1.1,8.8.8.8" \
+  -e DNS_IP_PREFERENCE="prefer-ipv4" \
   domizhang/snell:latest \
-  --reuse-port
+  -l verbose
 ```
 
 ## Docker Compose
@@ -84,6 +84,7 @@ services:
       PSK: your-secure-password
       IPV6: "false"
       DNS: 1.1.1.1,8.8.8.8
+      DNS_IP_PREFERENCE: prefer-ipv4
 ```
 
 ## Environment variables
@@ -92,9 +93,10 @@ services:
 | --- | --- | --- |
 | `SERVER_HOST` | `0.0.0.0` | Server listen host |
 | `SERVER_PORT` | `6333` | Server listen port for TCP and UDP |
-| `PSK` | generated | Pre-shared key. If empty, a random key is generated and printed once at startup |
-| `IPV6` | `false` | Enable IPv6 support |
+| `PSK` | generated | Pre-shared key. If empty, a random key is generated and printed once at startup. Snell v6 requires 16 to 255 bytes |
+| `IPV6` | `false` | Deprecated Snell compatibility option. `false` maps to IPv4-only behavior unless `DNS_IP_PREFERENCE` is set |
 | `DNS` | empty | DNS servers, comma-separated |
+| `DNS_IP_PREFERENCE` | empty | Optional Snell v6 `dns-ip-preference` value: `default`, `prefer-ipv4`, `prefer-ipv6`, `ipv4-only`, or `ipv6-only` |
 | `ARGS` | empty | Deprecated compatibility option. Prefer passing extra arguments after the image name |
 | `CONFIG_FILE` | `/tmp/snell.conf` | Generated config file path inside the container |
 
@@ -102,7 +104,7 @@ services:
 
 ```ini
 [Proxy]
-Proxy = snell, SERVER_IP, 6333, psk=YOUR_PSK, version=5
+Proxy = snell, SERVER_IP, 6333, psk=YOUR_PSK, version=6
 ```
 
 ## Security notes
@@ -116,7 +118,7 @@ Proxy = snell, SERVER_IP, 6333, psk=YOUR_PSK, version=5
 
 ```bash
 docker build \
-  --build-arg VERSION=5.0.1 \
+  --build-arg VERSION=6.0.0b1 \
   -t domizhang/snell:local .
 ```
 
