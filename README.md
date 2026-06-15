@@ -7,7 +7,7 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 
 ## Included version
 
-- Snell: `5.0.1`
+- Snell: `6.0.0b3`
 - Runtime base image: `debian:bullseye-slim`
 - Release artifacts are verified with pinned SHA256 checksums during build.
 
@@ -19,7 +19,7 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 ## Tags
 
 - `latest`: latest build from the default branch
-- `5.0.1`: current Snell version build
+- `6.0.0b3`: current Snell version build
 - `6`, `6.0`: latest Snell v6 build
 - `5`, `5.0`: latest Snell v5 build, currently `5.0.1`
 
@@ -52,7 +52,7 @@ docker run -d \
   domizhang/snell:latest
 ```
 
-Customize listener, IPv6 compatibility, DNS, DNS IP preference, egress interface, and extra Snell arguments:
+Customize listener, IPv6 compatibility, DNS, DNS IP preference, egress interface, mode, and extra Snell arguments:
 
 ```bash
 docker run -d \
@@ -66,6 +66,7 @@ docker run -d \
   -e DNS="1.1.1.1,8.8.8.8" \
   -e DNS_IP_PREFERENCE="prefer-ipv4" \
   -e EGRESS_INTERFACE="eth0" \
+  -e MODE="default" \
   domizhang/snell:latest \
   -l verbose
 ```
@@ -89,6 +90,7 @@ services:
       DNS: 1.1.1.1,8.8.8.8
       DNS_IP_PREFERENCE: prefer-ipv4
       EGRESS_INTERFACE: eth0
+      MODE: default
 ```
 
 ## Environment variables
@@ -102,6 +104,7 @@ services:
 | `DNS` | empty | DNS servers, comma-separated |
 | `DNS_IP_PREFERENCE` | empty | Optional Snell v6 `dns-ip-preference` value: `default`, `prefer-ipv4`, `prefer-ipv6`, `ipv4-only`, or `ipv6-only` |
 | `EGRESS_INTERFACE` | empty | Optional Snell v6 outbound interface binding |
+| `MODE` | empty | Optional Snell v6 beta 3 mode: `default`, `unshaped`, or `unsafe-raw`. If empty, Snell uses its upstream default |
 | `ARGS` | empty | Deprecated compatibility option. Prefer passing extra arguments after the image name |
 | `CONFIG_FILE` | `/tmp/snell.conf` | Generated config file path inside the container |
 
@@ -123,7 +126,7 @@ Proxy = snell, SERVER_IP, 6333, psk=YOUR_PSK, version=6
 
 ```bash
 docker build \
-  --build-arg VERSION=5.0.1 \
+  --build-arg VERSION=6.0.0b3 \
   -t domizhang/snell:local .
 ```
 
