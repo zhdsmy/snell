@@ -7,7 +7,7 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 
 ## Included version
 
-- Snell: `6.0.0b3`
+- Snell: `6.0.0b4`
 - Runtime base image: `debian:bullseye-slim`
 - Release artifacts are verified with pinned SHA256 checksums during build.
 
@@ -19,7 +19,7 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 ## Tags
 
 - `latest`: latest build from the default branch
-- `6.0.0b3`: current Snell version build
+- `6.0.0b4`: current Snell version build
 - `6`, `6.0`: latest Snell v6 build
 - `5`, `5.0`: latest Snell v5 build, currently `5.0.1`
 
@@ -104,7 +104,7 @@ services:
 | `DNS` | empty | DNS servers, comma-separated |
 | `DNS_IP_PREFERENCE` | empty | Optional Snell v6 `dns-ip-preference` value: `default`, `prefer-ipv4`, `prefer-ipv6`, `ipv4-only`, or `ipv6-only` |
 | `EGRESS_INTERFACE` | empty | Optional Snell v6 outbound interface binding |
-| `MODE` | empty | Optional Snell v6 beta 3 mode: `default`, `unshaped`, or `unsafe-raw`. If empty, Snell uses its upstream default |
+| `MODE` | empty | Optional Snell v6 beta mode: `default`, `unshaped`, or `unsafe-raw`. If empty, Snell uses its upstream default |
 | `ARGS` | empty | Deprecated compatibility option. Prefer passing extra arguments after the image name |
 | `CONFIG_FILE` | `/tmp/snell.conf` | Generated config file path inside the container |
 
@@ -126,7 +126,7 @@ Proxy = snell, SERVER_IP, 6333, psk=YOUR_PSK, version=6
 
 ```bash
 docker build \
-  --build-arg VERSION=6.0.0b3 \
+  --build-arg VERSION=6.0.0b4 \
   -t domizhang/snell:local .
 ```
 
