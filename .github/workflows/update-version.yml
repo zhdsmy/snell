@@ -26,11 +26,21 @@ jobs:
         run: |
           set -euo pipefail
 
+          newest_version() {
+            # Put prereleases before the final release, including rc2 before rc10.
+            sed -E 's/^([0-9]+\.[0-9]+\.[0-9]+)([A-Za-z])/\1~\2/' \
+              | sort -Vu | tail -n 1 | tr -d '~'
+          }
+          test "$(printf '%s\n' 5.0.1 6.0.0rc2 6.0.0rc 6.0.0beta4 | newest_version)" = "6.0.0rc2"
+          test "$(printf '%s\n' 6.0.0rc10 6.0.0rc2 | newest_version)" = "6.0.0rc10"
+          test "$(printf '%s\n' 6.0.0rc2 6.0.0 | newest_version)" = "6.0.0"
+
           CURRENT_VERSION="$(tr -d '[:space:]' < VERSION)"
           RELEASE_NOTES="$(mktemp)"
           curl -fsSL "${UPSTREAM_RELEASE_NOTES}" -o "${RELEASE_NOTES}"
           LATEST_VERSION="$(
-            perl -nE 'BEGIN { $release_notes = 0 } $release_notes = 1 if /^## Release Notes/; if ($release_notes && /snell-server-v([0-9][0-9A-Za-z.+-]*)-linux-amd64\.zip/) { say $1; exit }' "${RELEASE_NOTES}"
+            perl -nE 'BEGIN { $release_notes = 0 } $release_notes = 1 if /^## Release Notes/; if ($release_notes && /snell-server-v([0-9][0-9A-Za-z.+-]*)-linux-amd64\.zip/) { say $1 }' "${RELEASE_NOTES}" \
+              | newest_version
           )"
           LATEST_TAG="v${LATEST_VERSION}"
 
