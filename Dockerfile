@@ -20,7 +20,7 @@ RUN apk add --no-cache ca-certificates curl unzip \
     && unzip -q /tmp/snell-server.zip -d /tmp \
     && install -m 0755 /tmp/snell-server /usr/bin/snell-server
 
-FROM debian:bullseye-slim
+FROM debian:trixie-slim
 
 ARG VERSION=6.0.0rc2
 
@@ -49,15 +49,12 @@ COPY entrypoint.sh /entrypoint.sh
 RUN apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
         ca-certificates \
-        libc-ares2 \
-        libssl1.1 \
         libstdc++6 \
-        libsodium23 \
-        libuv1 \
         procps \
         tzdata \
     && rm -rf /var/lib/apt/lists/* \
-    && chmod +x /entrypoint.sh
+    && chmod +x /entrypoint.sh \
+    && snell-server --version
 
 WORKDIR /
 

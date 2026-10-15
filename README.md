@@ -8,7 +8,7 @@ Docker image for [Snell](https://kb.nssurge.com/surge-knowledge-base/release-not
 ## Included version
 
 - Snell: `6.0.0rc2`
-- Runtime base image: `debian:bullseye-slim`
+- Runtime base image: `debian:trixie-slim`
 - Release artifacts are verified with pinned SHA256 checksums during build.
 
 ## Supported platforms
