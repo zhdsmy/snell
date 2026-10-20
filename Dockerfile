@@ -3,7 +3,7 @@
 FROM alpine:3.23 AS downloader
 
 ARG TARGETARCH
-ARG VERSION=6.0.0rc2
+ARG VERSION=6.0.0
 ARG SNELL_AMD64_SHA256=8a9c4463ca87cfa5eaa37c6af0d37ab93ea275aa12391985bb2a375ca3abd7f2
 ARG SNELL_ARM64_SHA256=a0b2915cbc77dc3baf8fa069e741c20808d8a10c3a8a93e709a0a580645c3bd7
 
@@ -22,7 +22,7 @@ RUN apk add --no-cache ca-certificates curl unzip \
 
 FROM debian:trixie-slim
 
-ARG VERSION=6.0.0rc2
+ARG VERSION=6.0.0
 
 LABEL org.opencontainers.image.title="snell" \
       org.opencontainers.image.description="Docker image for Snell, a lean encrypted proxy protocol" \

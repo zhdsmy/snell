@@ -39,7 +39,7 @@ jobs:
           RELEASE_NOTES="$(mktemp)"
           curl -fsSL "${UPSTREAM_RELEASE_NOTES}" -o "${RELEASE_NOTES}"
           LATEST_VERSION="$(
-            perl -nE 'BEGIN { $release_notes = 0 } $release_notes = 1 if /^## Release Notes/; if ($release_notes && /snell-server-v([0-9][0-9A-Za-z.+-]*)-linux-amd64\.zip/) { say $1 }' "${RELEASE_NOTES}" \
+            perl -nE 'say $1 if /snell-server-v([0-9][0-9A-Za-z.+-]*)-linux-amd64\.zip/' "${RELEASE_NOTES}" \
               | newest_version
           )"
           LATEST_TAG="v${LATEST_VERSION}"
