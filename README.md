@@ -142,3 +142,13 @@ The Snell version is pinned in `VERSION` and `Dockerfile`. To update:
 ## License
 
 This repository only builds a Docker image. Snell is distributed under its upstream license.
+
+## CA security maintenance
+
+Runtime package layers are rebuilt against current repository metadata, even when
+the application version is unchanged. CI rejects the two CA roots revoked in
+October 2026 by DER SHA256 and fails on an empty or unreadable trust bundle.
+
+Both the current version and v5.0.1 pass the CA, smoke and vulnerability checks.
+Default-branch publication rebuilds the v5 compatibility images instead of
+retagging the old v5.0.1 image. Snell v5 downloads retain separate checksum pins.

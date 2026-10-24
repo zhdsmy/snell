@@ -25,6 +25,10 @@ env:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        channel: [current, v5]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -33,7 +37,9 @@ jobs:
         id: version
         shell: bash
         run: |
-          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+          if [[ "${{ matrix.channel }}" == "v5" ]]; then
+            VERSION="5.0.1"
+          elif [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
           else
             VERSION="$(tr -d '[:space:]' < VERSION)"
@@ -41,9 +47,11 @@ jobs:
           MAJOR="${VERSION%%.*}"
           MINOR_PART="${VERSION#*.}"
           MINOR="${MINOR_PART%%.*}"
-          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
-          echo "major=${MAJOR}" >> "${GITHUB_OUTPUT}"
-          echo "minor=${MAJOR}.${MINOR}" >> "${GITHUB_OUTPUT}"
+          {
+            echo "version=${VERSION}"
+            echo "major=${MAJOR}"
+            echo "minor=${MAJOR}.${MINOR}"
+          } >> "${GITHUB_OUTPUT}"
           echo "Building Snell ${VERSION}"
 
       - name: Lint Dockerfile
@@ -73,19 +81,26 @@ jobs:
         id: smoke_build
         run: |
           docker buildx build \
+            --pull \
+            --no-cache-filter runtime \
             --load \
             --platform linux/amd64 \
-            --tag local/${IMAGE_NAME}:ci \
+            --tag "local/${IMAGE_NAME}:ci" \
             --build-arg VERSION=${{ steps.version.outputs.version }} \
             .
 
       - name: Smoke test
         run: |
-          cid="$(docker run --platform linux/amd64 -d -e PSK=ci-smoke-password local/${IMAGE_NAME}:ci)"
+          docker run --rm --entrypoint snell-server "local/${IMAGE_NAME}:ci" --version 2>&1 \
+            | grep -F "${{ steps.version.outputs.version }}"
+          cid="$(docker run --platform linux/amd64 -d -e PSK=ci-smoke-password "local/${IMAGE_NAME}:ci")"
           trap 'docker rm -f "${cid}"' EXIT
           sleep 2
           docker logs "${cid}"
           test "$(docker inspect -f '{{.State.Running}}' "${cid}")" = "true"
+
+      - name: Verify effective CA trust
+        run: python3 tests/check_ca.py "local/${IMAGE_NAME}:ci"
 
       - name: Scan image vulnerabilities
         uses: aquasecurity/trivy-action@v0.36.0
@@ -151,9 +166,11 @@ jobs:
           MAJOR="${VERSION%%.*}"
           MINOR_PART="${VERSION#*.}"
           MINOR="${MINOR_PART%%.*}"
-          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
-          echo "major=${MAJOR}" >> "${GITHUB_OUTPUT}"
-          echo "minor=${MAJOR}.${MINOR}" >> "${GITHUB_OUTPUT}"
+          {
+            echo "version=${VERSION}"
+            echo "major=${MAJOR}"
+            echo "minor=${MAJOR}.${MINOR}"
+          } >> "${GITHUB_OUTPUT}"
           echo "Building Snell ${VERSION}"
 
       - name: Extract metadata
@@ -186,6 +203,8 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
+          pull: true
+          no-cache-filters: runtime
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
@@ -205,10 +224,20 @@ jobs:
           short-description: "Docker image for Snell - A lean encrypted proxy protocol"
           readme-filepath: ./README.md
 
-      - name: Backfill Snell v5 aliases
+      - name: Build and push patched Snell v5 compatibility images
         if: github.ref == 'refs/heads/master'
-        run: |
-          docker buildx imagetools create \
-            --tag "${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5" \
-            --tag "${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5.0" \
-            "${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5.0.1"
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          pull: true
+          no-cache-filters: runtime
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5
+            ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5.0
+            ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.IMAGE_NAME }}:5.0.1
+          build-args: |
+            VERSION=5.0.1
+          cache-from: type=gha,scope=snell-v5
+          cache-to: type=gha,scope=snell-v5,mode=max

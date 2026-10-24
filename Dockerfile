@@ -1,15 +1,21 @@
 # syntax=docker/dockerfile:1
 
-FROM alpine:3.23 AS downloader
+FROM alpine:3.24 AS downloader
 
 ARG TARGETARCH
 ARG VERSION=6.0.0
 ARG SNELL_AMD64_SHA256=8a9c4463ca87cfa5eaa37c6af0d37ab93ea275aa12391985bb2a375ca3abd7f2
 ARG SNELL_ARM64_SHA256=a0b2915cbc77dc3baf8fa069e741c20808d8a10c3a8a93e709a0a580645c3bd7
+ARG SNELL_V5_AMD64_SHA256=9bea1c2b9e35b73b31634856c04d18c393072b9e5dcde6a32781d8b8f908c539
+ARG SNELL_V5_ARM64_SHA256=2f178bf5ac468ce1a130454efa40a0603fbbe4e47ecc4880a989f4abc7f824cf
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
-RUN apk add --no-cache ca-certificates curl unzip \
+RUN apk add --no-cache --upgrade ca-certificates ca-certificates-bundle curl unzip \
+    && if [ "${VERSION}" = "5.0.1" ]; then \
+         SNELL_AMD64_SHA256="${SNELL_V5_AMD64_SHA256}"; \
+         SNELL_ARM64_SHA256="${SNELL_V5_ARM64_SHA256}"; \
+       fi \
     && case "${TARGETARCH}" in \
          amd64) SNELL_ARCH="amd64"; SNELL_SHA256="${SNELL_AMD64_SHA256}" ;; \
          arm64) SNELL_ARCH="aarch64"; SNELL_SHA256="${SNELL_ARM64_SHA256}" ;; \
@@ -20,7 +26,7 @@ RUN apk add --no-cache ca-certificates curl unzip \
     && unzip -q /tmp/snell-server.zip -d /tmp \
     && install -m 0755 /tmp/snell-server /usr/bin/snell-server
 
-FROM debian:trixie-slim
+FROM debian:trixie-slim AS runtime
 
 ARG VERSION=6.0.0
 
@@ -52,6 +58,7 @@ RUN apt-get update \
         libstdc++6 \
         procps \
         tzdata \
+    && dpkg --compare-versions "$(dpkg-query -W -f='${Version}' ca-certificates)" ge 20250419+deb13u1 \
     && rm -rf /var/lib/apt/lists/* \
     && chmod +x /entrypoint.sh \
     && snell-server --version
