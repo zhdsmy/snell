@@ -24,6 +24,7 @@ env:
 
 jobs:
   validate:
+    name: ${{ matrix.channel == 'current' && 'validate' || 'validate (v5)' }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
